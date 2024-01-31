@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "multicore.h": "c",
+        "flash.h": "c"
+    }
+}
