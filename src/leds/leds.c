@@ -137,9 +137,9 @@ void led_array_update_mode(led_array_t* led_array, uint8_t mode){
         led_array->leds[i].duty = INIT_DUTY;
     }
 
-    // TODO update all needed variables
     switch (led_array->mode){
         //Breathing & on_off
+        case _fixed_on:
         case _breathing: 
         case _on_off:
             led_array->increasing = true;
@@ -159,6 +159,7 @@ void led_array_update_values(led_array_t* led_array, uint64_t* delay_value){
     if ( !led_array->duty_assigned ) return;
 
     switch(led_array->mode){
+        case _fixed_on:
         case _led_off:
             *delay_value = 20000ULL;
             break;
