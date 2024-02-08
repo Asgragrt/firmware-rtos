@@ -97,20 +97,24 @@ bool tud_hid_nkro_keyboard_report(uint8_t report_id, uint8_t keycode[keycode_buf
     };
 
     uint8_t key_count = 0;
-    bool is_modifier;
+    uint8_t current_key;
 
     for(uint8_t key = 0; key < keycode_buffer; key++){
+        current_key = keycode[key];
 
-        //Boot key support
-        if ( key_count < 6 ){
-            is_modifier = boot_key_modifier(&report, keycode[key], &key_count);
+        // Modifier keys
+        if ( current_key >= 0xE0 ) {
+            report.modifier |= (1 << (current_key - 0xE0) );
+            continue;
         }
 
-        //NKRO key support
-        //                keycode[key] // 8           keycode[key] % 8
-        if ( !is_modifier ){
-            report.key_bitmap[keycode[key] >> 3] |= 1 << (keycode[key] & 0x7);
+        // Boot keys support
+        if ( key_count < 6 ) {
+            report.boot_keys[key_count] = current_key;
         }
+
+        // NKRO
+        report.key_bitmap[current_key >> 3] |= 1 << (current_key & 0x7);
     }
     
     return tud_hid_n_report(0, report_id, &report, sizeof(report));
