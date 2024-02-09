@@ -1,7 +1,7 @@
 // Pico libraries
-#include "pico/stdlib.h"
-#include "pico/flash.h"
 #include "pico/bootrom.h"
+#include "pico/flash.h"
+#include "pico/stdlib.h"
 
 // Tiny USB
 #include "tusb.h"
@@ -12,9 +12,9 @@
 #include "task.h"
 #include "timers.h"
 
+#include "flash/flash.h"
 #include "kbd/kbd.h"
 #include "leds/leds.h"
-#include "flash/flash.h"
 #include "tusb/tud_utils.h"
 
 // TODO clean main file
