@@ -9,7 +9,6 @@ uint16_t linear(uint16_t actual, uint16_t target, uint16_t dif){
     return (uint16_t)(m + actual);
 }
 
-// TODO verify datatype
 float breath_approx(uint8_t x){
     if ( x == 0 ){
         return 1.0;
