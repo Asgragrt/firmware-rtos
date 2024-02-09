@@ -66,6 +66,8 @@ keyboard_t* keyboard_new(void);
 
 void keyboard_init(keyboard_t* kbd);
 
+bool kbd_is_pressed( keyboard_t* kbd, uint8_t idx );
+
 bool keyboard_update_status(keyboard_t* kbd);
 
 bool keyboard_update_buffer(keyboard_t* kbd, uint8_t* buffer, uint8_t buflength);
