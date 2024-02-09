@@ -34,6 +34,11 @@
 #define LED_PIN 25
 
 enum {
+    ITF_KEYBOARD,
+    ITF_INOUT,
+};
+
+enum {
   BLINK_NOT_MOUNTED = 250,
   BLINK_MOUNTED = 1000,
   BLINK_SUSPENDED = 2500,
@@ -45,7 +50,6 @@ static void led_blinky_cb(TimerHandle_t xTimer);
 static void fla_task(void *param);
 static void usb_task(void *param);
 static void hid_task(void *kbd);
-static void cdc_task(void *params);
 static void led_task(void *leds);
 
 keyboard_t* kbd;
@@ -70,14 +74,12 @@ void main(){
 
     writeFlash = xSemaphoreCreateBinary();
     updateMode = xSemaphoreCreateBinary();
-    // TODO enter boot with key press at start
 
     TaskHandle_t handleUSB, handleHID, handleFLA, handleCDC, handleLED;
     blinky_tm = xTimerCreate(NULL, pdMS_TO_TICKS(BLINK_NOT_MOUNTED), true, NULL, led_blinky_cb);
     //xTaskCreate(fla_task, "fla", FLA_STACK_SIZE,       NULL, configMAX_PRIORITIES - 10, &handleFLA);
     xTaskCreate(usb_task, "usb", USB_STACK_SIZE,       NULL, configMAX_PRIORITIES - 2, &handleUSB);
     xTaskCreate(hid_task, "hid", HID_STACK_SIZE,        kbd, configMAX_PRIORITIES - 2, &handleHID);
-    //xTaskCreate(cdc_task, "cdc", CDC_STACK_SIZE,       NULL, configMAX_PRIORITIES - 3, &handleCDC);
     xTaskCreate(led_task, "led", LED_STACK_SIZE, &led_array, configMAX_PRIORITIES - 3, &handleLED);
 
     vTaskCoreAffinitySet( handleUSB, ( 1 << 0 ) );
@@ -126,40 +128,6 @@ void led_task(void *leds) {
     }
 }
 
-void cdc_task(void *params) {
-  (void) params;
-
-  // RTOS forever loop
-  while (1) {
-    // connected() check for DTR bit
-    // Most but not all terminal client set this when making connection
-    // if ( tud_cdc_connected() )
-    {
-      // There are data available
-      while (tud_cdc_available()) {
-        uint8_t buf[64];
-
-        // read and echo back
-        uint32_t count = tud_cdc_read(buf, sizeof(buf));
-        (void) count;
-
-        // Echo back
-        // Note: Skip echo by commenting out write() and write_flush()
-        // for throughput test e.g
-        //    $ dd if=/dev/zero of=/dev/ttyACM0 count=10000
-        state = (uint8_t) buf[0];
-        xSemaphoreGive(writeFlash);
-        tud_cdc_write(buf, count);
-      }
-
-      tud_cdc_write_flush();
-    }
-
-    // For ESP32-Sx this delay is essential to allow idle how to run and reset watchdog
-    vTaskDelay(1);
-  }
-}
-
 static void usb_task(void *param) {
   (void) param;
   gpio_init( LED_PIN );
@@ -176,8 +144,6 @@ static void usb_task(void *param) {
   while (1) {
     // put this thread to waiting state until there is new events
     tud_task();
-
-    tud_cdc_write_flush();
   }
 }
 
@@ -222,21 +188,25 @@ void hid_task(void* kbd){
     //vTaskDelay( pdMS_TO_TICKS(10) );
     
     for(;;){
+        vTaskDelay( pdMS_TO_TICKS(POLLING_INTERVAL) );
+
         if ( tud_suspended() ){
-        // Wake up host if we are in suspend mode
-        // and REMOTE_WAKEUP feature is enabled by host
-        vTaskDelay( pdMS_TO_TICKS(100) );
+            // Wake up host if we are in suspend mode
+            // and REMOTE_WAKEUP feature is enabled by host
+            vTaskDelay( pdMS_TO_TICKS(100) );
             if ( keyboard_update_status(kbd) ){
                 tud_remote_wakeup();
             }
-        } else if ( tud_hid_ready() ) {
-            vTaskDelay( pdMS_TO_TICKS(POLLING_INTERVAL) );
-            
-            //Clear array buffer
-            memset( buffer, 0, keycode_buffer * sizeof( uint8_t ) );
-            //uint8_t buffer[keycode_buffer] = {0};
-            keyboard_update_buffer(kbd, buffer, keycode_buffer);
-            tud_hid_nkro_keyboard_report(0, buffer);
+            continue;
         }
+
+        if ( !tud_hid_n_ready( ITF_KEYBOARD ) ) continue;
+        
+        //Clear array buffer
+        memset( buffer, 0, keycode_buffer * sizeof( uint8_t ) );
+        keyboard_update_buffer(kbd, buffer, keycode_buffer);
+
+        tud_hid_n_nkro_keyboard_report(ITF_KEYBOARD, 0, buffer);
+        
     }
 }

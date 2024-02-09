@@ -36,7 +36,7 @@
     HID_REPORT_SIZE        ( 3                                      ),\
     HID_REPORT_COUNT       ( 1                                      ),\
     HID_OUTPUT             ( HID_CONSTANT                           ),\
-    /*bitmap of keys (32 bytes)*/\
+    /*bitmap of keys (20 bytes)*/\
     HID_USAGE_PAGE ( HID_USAGE_PAGE_KEYBOARD                        ),\
         HID_REPORT_SIZE    ( 1                                      ),\
         HID_REPORT_COUNT_N ( BITMAP_BYTE_SIZE * 8, 2                ),\
@@ -54,20 +54,7 @@ typedef struct TU_ATTR_PACKED{
     uint8_t key_bitmap[BITMAP_BYTE_SIZE];
 } hid_nkro_keyboard_report_t;
 
-/*
-void tud_mount_cb(void);
-void tud_umount_cb(void);
-void tud_suspend_cb(bool remote_wakeup_en);
-void tud_resume_cb(void);
-*/
-
-
-//void led_blinking_task(void);
-//void hid_task(keyboard_t* kbd);
-bool tud_hid_nkro_keyboard_report(uint8_t report_id, uint8_t keycode[keycode_buffer]);
-bool boot_key_modifier(hid_nkro_keyboard_report_t* report, uint8_t key, uint8_t* counter);
-//void cdc_task(keyboard_t* kbd, bool reboot, bool* write, uint8_t* write_buff);
-void cdc_write_char_dec(uint8_t val);
+bool tud_hid_n_nkro_keyboard_report(uint8_t instance, uint8_t report_id, uint8_t keycode[keycode_buffer]);
 
 uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen);
 void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize);
