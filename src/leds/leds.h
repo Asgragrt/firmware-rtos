@@ -2,11 +2,10 @@
 #define _LEDS_H_
 
 #define LOW 0
-#define HIGH 55000
+#define HIGH 45000
 
 
 #define LED_COUNT 9
-
 #define LED0 18
 #define LED1 19
 #define LED2 20
@@ -46,6 +45,7 @@ enum {
     _breathing,
     _on_off,
     _double_wave,
+    _fixed_on,
     _led_off,
     E_MODE_COUNT,
 };
