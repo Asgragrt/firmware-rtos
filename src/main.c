@@ -186,7 +186,7 @@ void tud_resume_cb( void ) {
 
 void hid_task( void* kbd ) {
     ( keyboard_t* ) kbd;
-    uint8_t buffer[keycode_buffer];
+    uint8_t buffer[KEYCODE_BUFFER];
     // vTaskDelay( pdMS_TO_TICKS(10) );
 
     for ( ;; ) {
@@ -206,8 +206,8 @@ void hid_task( void* kbd ) {
             continue;
 
         // Clear array buffer
-        memset( buffer, 0, keycode_buffer * sizeof( uint8_t ) );
-        keyboard_update_buffer( kbd, buffer, keycode_buffer );
+        memset( buffer, 0, KEYCODE_BUFFER * sizeof( uint8_t ) );
+        keyboard_update_buffer( kbd, buffer, KEYCODE_BUFFER );
 
         tud_hid_n_nkro_keyboard_report( ITF_KEYBOARD, 0, buffer );
     }

@@ -15,7 +15,7 @@
 //--------------------------------------------------------------------+
 
 bool tud_hid_n_nkro_keyboard_report( uint8_t instance, uint8_t report_id,
-                                     uint8_t keycode[keycode_buffer] ) {
+                                     uint8_t keycode[KEYCODE_BUFFER] ) {
 
     hid_nkro_keyboard_report_t report = {
         .modifier = 0,
@@ -27,7 +27,7 @@ bool tud_hid_n_nkro_keyboard_report( uint8_t instance, uint8_t report_id,
     uint8_t key_count = 0;
     uint8_t current_key = 0;
 
-    for ( uint8_t key = 0; key < keycode_buffer; key++ ) {
+    for ( uint8_t key = 0; key < KEYCODE_BUFFER && keycode[key] > 0; key++ ) {
         current_key = keycode[key];
 
         // Modifier keys

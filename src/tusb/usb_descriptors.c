@@ -2,18 +2,6 @@
 #include "tud_utils.h"
 #include "tusb.h"
 
-/* A combination of interfaces must have a unique product id, since PC will save
- * device driver after the first plug. Same VID/PID with different interface e.g
- * MSC (first), then CDC (later) will possibly cause system error on PC.
- *
- * Auto ProductID layout's Bitmap:
- *   [MSB]         HID | MSC | CDC          [LSB]
- */
-#define _PID_MAP( itf, n ) ( ( CFG_TUD_##itf ) << ( n ) )
-#define USB_PID                                                                \
-    ( 0x4000 | _PID_MAP( CDC, 0 ) | _PID_MAP( MSC, 1 ) | _PID_MAP( HID, 2 ) |  \
-      _PID_MAP( MIDI, 3 ) | _PID_MAP( VENDOR, 4 ) )
-
 //--------------------------------------------------------------------+
 // Device Descriptors
 //--------------------------------------------------------------------+
@@ -78,18 +66,6 @@ uint8_t const* tud_hid_descriptor_report_cb( uint8_t itf ) {
 //--------------------------------------------------------------------+
 // Configuration Descriptor
 //--------------------------------------------------------------------+
-
-enum {
-    ITF_NUM_HID_KBD,
-    ITF_NUM_HID_INOUT,
-    ITF_NUM_TOTAL
-};
-
-#define CONFIG_TOTAL_LEN                                                       \
-    ( TUD_CONFIG_DESC_LEN + TUD_HID_DESC_LEN + TUD_HID_INOUT_DESC_LEN )
-
-#define EPNUM_HID_KBD   0x82
-#define EPNUM_HID_INOUT 0x01
 
 uint8_t const desc_configuration[] = {
     // Config number, interface count, string index, total length, attribute,

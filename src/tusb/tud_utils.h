@@ -3,11 +3,23 @@
 
 #include "tusb.h"
 
-#define BITMAP_BYTE_SIZE 20
+/* A combination of interfaces must have a unique product id, since PC will save
+ * device driver after the first plug. Same VID/PID with different interface e.g
+ * MSC (first), then CDC (later) will possibly cause system error on PC.
+ *
+ * Auto ProductID layout's Bitmap:
+ *   [MSB]         HID | MSC | CDC          [LSB]
+ */
+#define _PID_MAP( itf, n ) ( ( CFG_TUD_##itf ) << ( n ) )
+#define USB_PID                                                                \
+    ( 0x4000 | _PID_MAP( CDC, 0 ) | _PID_MAP( MSC, 1 ) | _PID_MAP( HID, 2 ) |  \
+      _PID_MAP( MIDI, 3 ) | _PID_MAP( VENDOR, 4 ) )
 
 #define POLLING_INTERVAL 1 // ms
+// Number of parallel keys to send per report
+#define KEYCODE_BUFFER   20
 
-#define keycode_buffer   20
+#define BITMAP_BYTE_SIZE 20
 
 // clang-format off
 #define TUD_HID_REPORT_DESC_NKRO_KEYBOARD() \
@@ -49,6 +61,10 @@
     HID_COLLECTION_END
 // clang-format on
 
+//--------------------------------------------------------------------+
+// Keyboard Report Struct
+//--------------------------------------------------------------------+
+
 typedef struct TU_ATTR_PACKED {
     uint8_t modifier; /**< Keyboard modifier (KEYBOARD_MODIFIER_* masks). */
     uint8_t reserved; /**< Reserved for OEM use, always set to 0. */
@@ -56,8 +72,28 @@ typedef struct TU_ATTR_PACKED {
     uint8_t key_bitmap[BITMAP_BYTE_SIZE];
 } hid_nkro_keyboard_report_t;
 
+//--------------------------------------------------------------------+
+// Configuration Descriptor
+//--------------------------------------------------------------------+
+
+enum {
+    ITF_NUM_HID_KBD,
+    ITF_NUM_HID_INOUT,
+    ITF_NUM_TOTAL
+};
+
+#define CONFIG_TOTAL_LEN                                                       \
+    ( TUD_CONFIG_DESC_LEN + TUD_HID_DESC_LEN + TUD_HID_INOUT_DESC_LEN )
+
+#define EPNUM_HID_KBD   0x82
+#define EPNUM_HID_INOUT 0x01
+
+//--------------------------------------------------------------------+
+// Function prototypes
+//--------------------------------------------------------------------+
+
 bool tud_hid_n_nkro_keyboard_report( uint8_t instance, uint8_t report_id,
-                                     uint8_t keycode[keycode_buffer] );
+                                     uint8_t keycode[KEYCODE_BUFFER] );
 uint16_t tud_hid_get_report_cb( uint8_t itf, uint8_t report_id,
                                 hid_report_type_t report_type, uint8_t* buffer,
                                 uint16_t reqlen );
