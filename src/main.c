@@ -50,7 +50,7 @@ static void led_task( void* leds );
 
 keyboard_t* kbd;
 led_array_t led_array;
-uint8_t     state = 0;
+uint8_t state = 0;
 
 SemaphoreHandle_t writeFlash, updateMode;
 

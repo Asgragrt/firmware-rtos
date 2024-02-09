@@ -55,17 +55,17 @@ enum {
 #define INIT_DUTY  1
 
 typedef struct {
-    uint8_t  pin;
+    uint8_t pin;
     uint16_t duty;
 } led_t;
 
 typedef struct {
-    led_t    leds[LED_COUNT];
-    uint8_t  mode;
-    bool     increasing;
+    led_t leds[LED_COUNT];
+    uint8_t mode;
+    bool increasing;
     uint16_t time_counter;
     uint16_t led_counter;
-    bool     duty_assigned;
+    bool duty_assigned;
 } led_array_t;
 
 led_array_t led_array_init( void );

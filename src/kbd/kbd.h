@@ -59,7 +59,7 @@ typedef struct {
 
 typedef struct {
     keyboard_pin_t pins[PIN_COUNT];
-    uint16_t       status;
+    uint16_t status;
     // bool alternate_key;
     // uint16_t counter;
     // bool start_counter;

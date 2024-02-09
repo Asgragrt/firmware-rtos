@@ -149,7 +149,7 @@ bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
     */
 
     uint8_t offset = 0;
-    bool    is_pressed = false;
+    bool is_pressed = false;
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
         is_pressed = kbd_is_pressed( kbd, i );
 
