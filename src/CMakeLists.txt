@@ -24,8 +24,7 @@ target_link_libraries(${ProjectName}
     pico_flash
     hardware_pwm
     hardware_flash 
-    tinyusb_device 
-    tinyusb_board
+    tinyusb_device
     FreeRTOS-Kernel-Heap4 
     )
 

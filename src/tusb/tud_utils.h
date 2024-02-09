@@ -2,13 +2,15 @@
 #define _TUD_UTILS_H_
 
 #include "../kbd/kbd.h"
+#include "tusb.h"
 
 #define BITMAP_BYTE_SIZE 20
 
-#define POLLING_INTERVAL 1 //ms
+#define POLLING_INTERVAL 1 // ms
 
-#define keycode_buffer 20
+#define keycode_buffer   20
 
+// clang-format off
 #define TUD_HID_REPORT_DESC_NKRO_KEYBOARD() \
     HID_USAGE_PAGE ( HID_USAGE_PAGE_DESKTOP                         ),\
     HID_USAGE      ( HID_USAGE_DESKTOP_KEYBOARD                     ),\
@@ -45,19 +47,24 @@
         HID_USAGE_MIN      ( 0                                      ),\
         HID_USAGE_MAX      ( BITMAP_BYTE_SIZE * 8 - 1               ),\
         HID_INPUT          ( HID_DATA | HID_VARIABLE | HID_ABSOLUTE ),\
-    HID_COLLECTION_END\
+    HID_COLLECTION_END
+// clang-format on
 
-typedef struct TU_ATTR_PACKED{
-    uint8_t modifier;   /**< Keyboard modifier (KEYBOARD_MODIFIER_* masks). */
-    uint8_t reserved;   /**< Reserved for OEM use, always set to 0. */
+typedef struct TU_ATTR_PACKED {
+    uint8_t modifier; /**< Keyboard modifier (KEYBOARD_MODIFIER_* masks). */
+    uint8_t reserved; /**< Reserved for OEM use, always set to 0. */
     uint8_t boot_keys[6];
     uint8_t key_bitmap[BITMAP_BYTE_SIZE];
 } hid_nkro_keyboard_report_t;
 
-bool tud_hid_n_nkro_keyboard_report(uint8_t instance, uint8_t report_id, uint8_t keycode[keycode_buffer]);
+bool tud_hid_n_nkro_keyboard_report( uint8_t instance, uint8_t report_id,
+                                     uint8_t keycode[keycode_buffer] );
 
-uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen);
-void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize);
-
+uint16_t tud_hid_get_report_cb( uint8_t itf, uint8_t report_id,
+                                hid_report_type_t report_type, uint8_t* buffer,
+                                uint16_t reqlen );
+void     tud_hid_set_report_cb( uint8_t itf, uint8_t report_id,
+                                hid_report_type_t report_type,
+                                uint8_t const* buffer, uint16_t bufsize );
 
 #endif /* _TUD_UTILS_H_ */
