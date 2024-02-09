@@ -186,7 +186,6 @@ void tud_resume_cb( void ) {
 void hid_task( void* kbd ) {
     ( keyboard_t* ) kbd;
     uint8_t buffer[KEYCODE_BUFFER];
-    // vTaskDelay( pdMS_TO_TICKS(10) );
 
     for ( ;; ) {
         vTaskDelay( pdMS_TO_TICKS( POLLING_INTERVAL ) );

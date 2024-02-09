@@ -7,18 +7,20 @@ add_executable(${ProjectName}
     flash/flash.c
 )
 
+# Specifying FreeRTOSConfig directory
+add_compile_options(FREERTOS_CONFIG_FILE_DIRECTORY = ${CMAKE_CURRENT_LIST_DIR}/FreeRTOS)
 
 target_sources(${PROJECT_NAME} PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/tusb/usb_descriptors.c
-    ${CMAKE_CURRENT_LIST_DIR}/freertos_hook.c
+    ${CMAKE_CURRENT_LIST_DIR}/FreeRTOS/freertos_hook.c
     )
 
 target_include_directories(${ProjectName} PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-# target_compile_definitions(${ProjectName} PRIVATE PICO_MALLOC_PANIC=0)
 
+# Linking needed libraries
 target_link_libraries(${ProjectName} 
     pico_stdlib
     pico_flash
