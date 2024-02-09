@@ -22,6 +22,7 @@ target_include_directories(${ProjectName} PUBLIC
 target_link_libraries(${ProjectName} 
     pico_stdlib
     pico_flash
+    pico_unique_id
     hardware_pwm
     hardware_flash 
     tinyusb_device
