@@ -57,8 +57,7 @@ SemaphoreHandle_t writeFlash, updateMode;
 void write_to_flash( void* param );
 
 void boot_if_pressed( keyboard_t* kbd ) {
-    if ( !kbd_is_pressed( kbd, 7 ) || !kbd_is_pressed( kbd, 8 ) )
-        return;
+    if ( !kbd_is_pressed( kbd, 7 ) || !kbd_is_pressed( kbd, 8 ) ) return;
 
     reset_usb_boot( 0, 0 );
 }
@@ -202,8 +201,7 @@ void hid_task( void* kbd ) {
             continue;
         }
 
-        if ( !tud_hid_n_ready( ITF_KEYBOARD ) )
-            continue;
+        if ( !tud_hid_n_ready( ITF_KEYBOARD ) ) continue;
 
         // Clear array buffer
         memset( buffer, 0, KEYCODE_BUFFER * sizeof( uint8_t ) );

@@ -14,8 +14,7 @@ keyboard_t* keyboard_new( void ) {
 
     keyboard_t* kbd = ( keyboard_t* ) malloc( sizeof( keyboard_t ) );
 
-    if ( kbd == NULL )
-        return kbd;
+    if ( kbd == NULL ) return kbd;
 
     // Assigning values of kb keys
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
@@ -35,8 +34,7 @@ keyboard_t* keyboard_new( void ) {
                 break;
             }
 
-            if ( j - current_idx > 3 )
-                break;
+            if ( j - current_idx > 3 ) break;
 
             kp.keys[j - current_idx] = keys[j];
         }
@@ -83,8 +81,7 @@ void kbd_set_waiting( keyboard_t* kbd, uint8_t idx ) {
 
 // Init the key pins
 void keyboard_init( keyboard_t* kbd ) {
-    if ( kbd == NULL )
-        return;
+    if ( kbd == NULL ) return;
     uint8_t pin;
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
         pin = kbd_get_pin( kbd, i );
@@ -96,8 +93,7 @@ void keyboard_init( keyboard_t* kbd ) {
 
 // Update status
 bool keyboard_update_status( keyboard_t* kbd ) {
-    if ( kbd == NULL )
-        return false;
+    if ( kbd == NULL ) return false;
     // uint16_t status = kbd->status;
     uint16_t new_status = 0;
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
@@ -113,8 +109,7 @@ bool keyboard_update_status( keyboard_t* kbd ) {
 
 bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
                              uint8_t buff_length ) {
-    if ( kbd == NULL )
-        return false;
+    if ( kbd == NULL ) return false;
     uint16_t status = kbd->status;
     uint16_t new_status = 0;
 
@@ -153,8 +148,7 @@ bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
         is_pressed = kbd_is_pressed( kbd, i );
 
-        if ( !is_pressed && !kbd_is_waiting( kbd, i ) )
-            continue;
+        if ( !is_pressed && !kbd_is_waiting( kbd, i ) ) continue;
 
         memcpy( buffer + offset, kbd_get_keys( kbd, i ),
                 kbd_get_key_count( kbd, i ) );
@@ -192,8 +186,7 @@ bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
 // Estructura:
 // 05_ModoLed_69_CantidadDeTeclasAModificar_PosiciónTecla_CódigoHID0_CódigoHID1.._CódigoHID3_FF_...
 bool keyboard_update_key( keyboard_t* kbd ) {
-    if ( flash_target_contents[1] != 0x69 )
-        return false;
+    if ( flash_target_contents[1] != 0x69 ) return false;
 
     uint8_t key_modification_count = flash_target_contents[2];
 
@@ -202,8 +195,7 @@ bool keyboard_update_key( keyboard_t* kbd ) {
 
     for ( uint8_t i = 0; i < key_modification_count; i++ ) {
         key_pin = flash_target_contents[current_idx];
-        if ( key_pin >= PIN_COUNT )
-            return false;
+        if ( key_pin >= PIN_COUNT ) return false;
 
         for ( uint8_t j = current_idx + 1;; j++ ) {
             if ( flash_target_contents[j] == 0xFF ) {

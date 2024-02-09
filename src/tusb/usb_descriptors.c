@@ -140,8 +140,7 @@ uint16_t const* tud_descriptor_string_cb( uint8_t index, uint16_t langid ) {
             chr_count = ( uint8_t ) strlen( str );
             uint8_t const max_count =
                 sizeof( _desc_str ) / sizeof( _desc_str[0] ) - 1;
-            if ( chr_count > max_count )
-                chr_count = max_count;
+            if ( chr_count > max_count ) chr_count = max_count;
 
             // Convert ASCII string into UTF-16
             for ( uint8_t i = 0; i < chr_count; i++ ) {

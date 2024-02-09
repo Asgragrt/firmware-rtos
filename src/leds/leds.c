@@ -37,8 +37,7 @@ led_array_t led_array_init( void ) {
 }
 
 void led_array_set_levels( led_array_t* led_array ) {
-    if ( led_array->duty_assigned )
-        return;
+    if ( led_array->duty_assigned ) return;
 
     for ( uint8_t i = 0; i < LED_COUNT; i++ ) {
         pwm_set_gpio_level( led_array->leds[i].pin, led_array->leds[i].duty );
@@ -138,8 +137,7 @@ uint64_t on_off( led_array_t* led_array ) {
 }
 
 void led_array_update_mode( led_array_t* led_array, uint8_t mode ) {
-    if ( led_array_set_mode( led_array, mode ) )
-        return;
+    if ( led_array_set_mode( led_array, mode ) ) return;
 
     for ( uint8_t i = 0; i < LED_COUNT; i++ ) {
         led_array->leds[i].duty = INIT_DUTY;
@@ -164,8 +162,7 @@ void led_array_update_mode( led_array_t* led_array, uint8_t mode ) {
 }
 
 void led_array_update_values( led_array_t* led_array, uint64_t* delay_value ) {
-    if ( !led_array->duty_assigned )
-        return;
+    if ( !led_array->duty_assigned ) return;
 
     switch ( led_array->mode ) {
         case _fixed_on:
