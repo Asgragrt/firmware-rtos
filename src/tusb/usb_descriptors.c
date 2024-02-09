@@ -1,6 +1,6 @@
+#include "pico/unique_id.h"
 #include "tud_utils.h"
 #include "tusb.h"
-#include "pico/unique_id.h"
 
 /* A combination of interfaces must have a unique product id, since PC will save
  * device driver after the first plug. Same VID/PID with different interface e.g
@@ -79,7 +79,11 @@ uint8_t const* tud_hid_descriptor_report_cb( uint8_t itf ) {
 // Configuration Descriptor
 //--------------------------------------------------------------------+
 
-enum { ITF_NUM_HID_KBD, ITF_NUM_HID_INOUT, ITF_NUM_TOTAL };
+enum {
+    ITF_NUM_HID_KBD,
+    ITF_NUM_HID_INOUT,
+    ITF_NUM_TOTAL
+};
 
 #define CONFIG_TOTAL_LEN                                                       \
     ( TUD_CONFIG_DESC_LEN + TUD_HID_DESC_LEN + TUD_HID_INOUT_DESC_LEN )
@@ -116,7 +120,7 @@ uint8_t const* tud_descriptor_configuration_cb( uint8_t index ) {
 // String Descriptors
 //--------------------------------------------------------------------+
 
-char unique_id[ 17 ];
+char unique_id[17];
 
 // array of pointer to string descriptors
 char const* string_desc_arr[] = {
@@ -124,7 +128,7 @@ char const* string_desc_arr[] = {
                       0x04 },  // 0: is supported language is English (0x0409)
     "Asgragrt",                // 1: Manufacturer
     "KeyTao",                  // 2: Product
-    unique_id,                    // 3: Serials, should use chip ID
+    unique_id,                 // 3: Serials, should use chip ID
     "NKRO Keyboard Interface", // 4: Keyboard Interface String
     "NKRO Keyboard Comms Interface" // 5: Keyboard Communication String
 };
@@ -136,7 +140,7 @@ static uint16_t _desc_str[32 + 1];
 // enough for transfer to complete
 uint16_t const* tud_descriptor_string_cb( uint8_t index, uint16_t langid ) {
     ( void ) langid;
-    pico_get_unique_board_id_string( unique_id, 32);
+    pico_get_unique_board_id_string( unique_id, 32 );
 
     uint8_t chr_count;
 
