@@ -2,7 +2,7 @@
 #include "pico/stdlib.h"
 
 #include "tusb.h"
-#include "bsp/board.h"
+//#include "bsp/board.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -18,11 +18,20 @@
 #include "flash/flash.h"
 #include "pico/flash.h"
 
+#include "pico/bootrom.h"
+
+// TODO clean main file
+// TODO use HID IN/OUT to transfer data between the device and the computer
+// TODO app that handles the data transfer
+// TODO clean flash directory
+
 #define FLA_STACK_SIZE      configMINIMAL_STACK_SIZE * 2
 #define USB_STACK_SIZE    (3*configMINIMAL_STACK_SIZE/2) * (CFG_TUSB_DEBUG ? 2 : 1)
 #define HID_STACK_SIZE      configMINIMAL_STACK_SIZE
 #define CDC_STACK_SIZE      configMINIMAL_STACK_SIZE
 #define LED_STACK_SIZE      configMINIMAL_STACK_SIZE
+
+#define LED_PIN 25
 
 enum {
   BLINK_NOT_MOUNTED = 250,
@@ -47,19 +56,28 @@ SemaphoreHandle_t writeFlash, updateMode;
 
 void write_to_flash( void* param );
 
+void boot_if_pressed( keyboard_t* kbd ) {
+    if ( !kbd_is_pressed(kbd, 7) || !kbd_is_pressed(kbd, 8) ) return;
+
+    reset_usb_boot( 0, 0);
+}
+
 void main(){
     kbd = keyboard_new();
     keyboard_init(kbd); 
 
+    boot_if_pressed( kbd );
+
     writeFlash = xSemaphoreCreateBinary();
     updateMode = xSemaphoreCreateBinary();
+    // TODO enter boot with key press at start
 
     TaskHandle_t handleUSB, handleHID, handleFLA, handleCDC, handleLED;
     blinky_tm = xTimerCreate(NULL, pdMS_TO_TICKS(BLINK_NOT_MOUNTED), true, NULL, led_blinky_cb);
-    xTaskCreate(fla_task, "fla", FLA_STACK_SIZE,       NULL, configMAX_PRIORITIES - 10, &handleFLA);
+    //xTaskCreate(fla_task, "fla", FLA_STACK_SIZE,       NULL, configMAX_PRIORITIES - 10, &handleFLA);
     xTaskCreate(usb_task, "usb", USB_STACK_SIZE,       NULL, configMAX_PRIORITIES - 2, &handleUSB);
     xTaskCreate(hid_task, "hid", HID_STACK_SIZE,        kbd, configMAX_PRIORITIES - 2, &handleHID);
-    xTaskCreate(cdc_task, "cdc", CDC_STACK_SIZE,       NULL, configMAX_PRIORITIES - 3, &handleCDC);
+    //xTaskCreate(cdc_task, "cdc", CDC_STACK_SIZE,       NULL, configMAX_PRIORITIES - 3, &handleCDC);
     xTaskCreate(led_task, "led", LED_STACK_SIZE, &led_array, configMAX_PRIORITIES - 3, &handleLED);
 
     vTaskCoreAffinitySet( handleUSB, ( 1 << 0 ) );
@@ -144,7 +162,9 @@ void cdc_task(void *params) {
 
 static void usb_task(void *param) {
   (void) param;
-  board_init();
+  gpio_init( LED_PIN );
+  gpio_set_dir( LED_PIN, true );
+  //board_init();
   tusb_init();
   // init device stack on configured roothub port
   // This should be called after scheduler/kernel is started.
@@ -165,7 +185,8 @@ static void led_blinky_cb(TimerHandle_t xTimer) {
   (void) xTimer;
   static bool led_state = false;
 
-  board_led_write(led_state);
+  //board_led_write(led_state);
+  gpio_put( LED_PIN, led_state );
   led_state = 1 - led_state; // toggle
 }
 
@@ -201,17 +222,16 @@ void hid_task(void* kbd){
     //vTaskDelay( pdMS_TO_TICKS(10) );
     
     for(;;){
-        vTaskDelay( pdMS_TO_TICKS(POLLING_INTERVAL) );
-
         if ( tud_suspended() ){
         // Wake up host if we are in suspend mode
         // and REMOTE_WAKEUP feature is enabled by host
+        vTaskDelay( pdMS_TO_TICKS(100) );
             if ( keyboard_update_status(kbd) ){
                 tud_remote_wakeup();
             }
         } else if ( tud_hid_ready() ) {
-
-            //if ( !tud_hid_ready() ) return;
+            vTaskDelay( pdMS_TO_TICKS(POLLING_INTERVAL) );
+            
             //Clear array buffer
             memset( buffer, 0, keycode_buffer * sizeof( uint8_t ) );
             //uint8_t buffer[keycode_buffer] = {0};
