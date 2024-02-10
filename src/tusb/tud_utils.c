@@ -119,10 +119,13 @@ void hid_task( void* kbd ) {
 
         // Clear array buffer
         memset( buffer, 0, KEYCODE_BUFFER * sizeof( uint8_t ) );
-        keyboard_update_buffer( kbd, buffer, KEYCODE_BUFFER );
 
-        // Generate hid report
-        tud_hid_n_nkro_keyboard_report( ITF_KBD, 0, buffer );
+        // If current status is different from the previous status
+        if ( keyboard_update_buffer( kbd, buffer, KEYCODE_BUFFER ) ){
+            // Generate hid report
+            tud_hid_n_nkro_keyboard_report( ITF_KBD, 0, buffer );
+
+        }
     }
 }
 
