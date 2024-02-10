@@ -143,22 +143,10 @@ void led_array_update_mode( led_array_t* led_array, uint8_t mode ) {
         led_array->leds[i].duty = INIT_DUTY;
     }
 
-    switch ( led_array->mode ) {
-        // Breathing & on_off
-        case _fixed_on:
-        case _breathing:
-        case _on_off:
-            led_array->increasing = true;
-            break;
-
-        // Simple wave
-        case _simple_wave:
-        case _double_wave:
-        default:
-            led_array->led_counter = 0;
-            led_array->time_counter = 0;
-            break;
-    }
+    led_array->increasing = true;
+    led_array->led_counter = 0;
+    led_array->time_counter = 0;
+    led_array->duty_assigned = false;
 }
 
 void led_array_update_values( led_array_t* led_array, uint64_t* delay_value ) {
@@ -186,5 +174,3 @@ void led_array_update_values( led_array_t* led_array, uint64_t* delay_value ) {
 
     led_array->duty_assigned = false;
 }
-
-// TODO add off state, and use it when suspended
