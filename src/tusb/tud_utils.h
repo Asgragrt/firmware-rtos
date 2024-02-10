@@ -3,6 +3,9 @@
 
 #include "tusb.h"
 
+#include "FreeRTOS.h"
+#include "timers.h"
+
 /* A combination of interfaces must have a unique product id, since PC will save
  * device driver after the first plug. Same VID/PID with different interface e.g
  * MSC (first), then CDC (later) will possibly cause system error on PC.
@@ -77,8 +80,8 @@ typedef struct TU_ATTR_PACKED {
 //--------------------------------------------------------------------+
 
 enum {
-    ITF_NUM_HID_KBD,
-    ITF_NUM_HID_INOUT,
+    ITF_KBD,
+    ITF_INOUT,
     ITF_NUM_TOTAL
 };
 
@@ -88,17 +91,35 @@ enum {
 #define EPNUM_HID_KBD   0x82
 #define EPNUM_HID_INOUT 0x01
 
+enum {
+    BLINK_NOT_MOUNTED = 250,
+    BLINK_MOUNTED = 1000,
+    BLINK_SUSPENDED = 2500,
+};
+
 //--------------------------------------------------------------------+
 // Function prototypes
 //--------------------------------------------------------------------+
+void usb_task( void* param );
 
 bool tud_hid_n_nkro_keyboard_report( uint8_t instance, uint8_t report_id,
                                      uint8_t keycode[KEYCODE_BUFFER] );
+
 uint16_t tud_hid_get_report_cb( uint8_t itf, uint8_t report_id,
                                 hid_report_type_t report_type, uint8_t* buffer,
                                 uint16_t reqlen );
 void tud_hid_set_report_cb( uint8_t itf, uint8_t report_id,
                             hid_report_type_t report_type,
                             uint8_t const* buffer, uint16_t bufsize );
+
+void hid_task( void* kbd );
+
+void led_blinky_timer( void );
+void led_blinky_cb( TimerHandle_t xTimer );
+
+void tud_mount_cb( void );
+void tud_umount_cb( void );
+void tud_suspend_cb( bool remote_wakeup_en );
+void tud_resume_cb( void );
 
 #endif /* _TUD_UTILS_H_ */
