@@ -1,32 +1,13 @@
 #ifndef _KBD_H_
 #define _KBD_H_
 
+#include "../keyboard_config.h"
 #include "pico/stdlib.h"
 
 #define PIN_COUNT     9
 
 #define DEBOUNCE_TIME 0x1F // 5 ms
 
-#define K0            0
-#define K1            1
-#define K2            2
-#define K3            3
-#define K4            7
-#define K5            8
-#define K6            4
-#define K7            5
-#define K8            6
-/*/
-#define K0 1
-#define K1 3
-#define K2 5
-#define K3 12
-#define K4 14
-#define K5 16
-#define K6 20
-#define K7 22
-#define K8 24
-*/
 #define KN                                                                     \
     { K0, K1, K2, K3, K6, K7, K8, K4, K5 }
 

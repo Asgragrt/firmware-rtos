@@ -1,44 +1,11 @@
 #ifndef _LEDS_H_
 #define _LEDS_H_
 
+#include "../keyboard_config.h"
 #include "pico/stdlib.h"
 
-#define LOW       0
-#define HIGH      45000
-
-#define LED_COUNT 9
-#define LED0      18
-#define LED1      19
-#define LED2      20
-#define LED3      21
-#define LED4      22
-#define LED5      26
-#define LED6      27
-#define LED7      28
-#define LED8      15
-
-#define LEDN                                                                   \
-    { LED0, LED1, LED2, LED3, LED4, LED5, LED6, LED7, LED8 }
-
-//#define LEDN {LED0, LED1, LED2, LED3, LED4,\
-//              LED5}
-
-/*/
-//Real leds
-#define LED_COUNT 10
-#define LED0 2
-#define LED1 4
-#define LED2 6
-#define LED3 13
-#define LED4 15
-#define LED5 17
-#define LED6 19
-#define LED7 21
-#define LED8 23
-#define LED9 25
-#define LEDN {LED0, LED1, LED2, LED4, LED3,\
-              LED6, LED5, LED7, LED8, LED9}
-*/
+#define LOW  0
+#define HIGH 45000
 
 enum {
     _simple_wave = 0,
