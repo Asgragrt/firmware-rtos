@@ -2,6 +2,7 @@ add_executable(${ProjectName}
     main.c
     tusb/tud_utils.c
     kbd/kbd.c
+    switch/switch.c
     leds/leds.c
     leds/leds_utils.c
     flash/flash.c
@@ -34,6 +35,7 @@ target_link_libraries(${ProjectName}
 pico_add_extra_outputs(${ProjectName})
 
 target_compile_definitions(${ProjectName} PRIVATE
-PICO_FLASH_SAFE_EXECUTE_PICO_SUPPORT_MULTICORE_LOCKOUT=0
-PICO_FLASH_SAFE_EXECUTE_USE_FREERTOS_SMP=1
+PICO_FLASH_SAFE_EXECUTE_PICO_SUPPORT_MULTICORE_LOCKOUT=0 # Needed for proper safe execute functioning
+PICO_FLASH_SAFE_EXECUTE_USE_FREERTOS_SMP=1 # Needed for proper safe execute functioning
+PICO_XOSC_STARTUP_DELAY_MULTIPLIER=64 # Needed to compensate for bad PCB design
 )

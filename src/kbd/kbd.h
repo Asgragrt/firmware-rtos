@@ -3,6 +3,7 @@
 
 #include "../keyboard_config.h"
 #include "pico/stdlib.h"
+#include "../switch/switch.h"
 
 #define PIN_COUNT     9
 
@@ -31,19 +32,14 @@
     }
 
 typedef struct {
-    uint8_t pin;
+    switch_t sw;
     uint8_t key_count;
     uint8_t keys[4];
-    // uint8_t alternate_keys[1];
-    uint16_t debounce;
-} keyboard_pin_t;
+} keyboard_switch_t;
 
 typedef struct {
-    keyboard_pin_t pins[PIN_COUNT];
+    keyboard_switch_t pins[PIN_COUNT];
     uint16_t status;
-    // bool alternate_key;
-    // uint16_t counter;
-    // bool start_counter;
 } keyboard_t;
 
 keyboard_t* keyboard_new( void );
@@ -57,6 +53,6 @@ bool keyboard_update_status( keyboard_t* kbd );
 bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
                              uint8_t buflength );
 
-bool keyboard_update_key( keyboard_t* kbd );
+void keyboard_debounce( keyboard_t* kbd );
 
 #endif /* _KBD_H_ */

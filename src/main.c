@@ -29,6 +29,7 @@
 
 static void fla_task( void* param );
 static void led_task( void* leds );
+static void kbd_task( void* kbd );
 
 keyboard_t* kbd;
 led_array_t led_array;
@@ -56,6 +57,7 @@ void main() {
     TaskHandle_t handleUSB, handleHID, handleFLA, handleCDC, handleLED;
     // xTaskCreate(fla_task, "fla", FLA_STACK_SIZE,       NULL,
     // configMAX_PRIORITIES - 10, &handleFLA);
+    xTaskCreate( kbd_task, "kbd", USB_STACK_SIZE, kbd, configMAX_PRIORITIES - 1, NULL );
     xTaskCreate( usb_task, "usb", USB_STACK_SIZE, NULL,
                  configMAX_PRIORITIES - 2, &handleUSB );
     xTaskCreate( hid_task, "hid", HID_STACK_SIZE, kbd, configMAX_PRIORITIES - 2,
@@ -70,6 +72,14 @@ void main() {
 
     // Start the scheduler
     vTaskStartScheduler();
+}
+
+void kbd_task( void* kbd ) {
+    ( keyboard_t* ) kbd;
+    for (;;){
+        keyboard_debounce(kbd);
+        vTaskDelay( DEBOUCE_SAMPLE_TICKS );
+    }
 }
 
 void write_to_flash( void* param ) {
