@@ -1,14 +1,15 @@
 #include "pico/stdlib.h"
 #include "tusb.h"
 
+#include "../switch/switch.h"
 #include "flash/flash.h"
 #include "kbd.h"
 #include <stdlib.h>
-#include "../switch/switch.h"
 
-keyboard_switch_t new_kbdsw(uint8_t pin, uint8_t* current_idx, uint8_t* keys, uint8_t keys_size){
+keyboard_switch_t new_kbdsw( uint8_t pin, uint8_t* current_idx, uint8_t* keys,
+                             uint8_t keys_size ) {
     keyboard_switch_t ks = {
-        .sw = new_switch(pin),
+        .sw = new_switch( pin ),
         .key_count = 0,
         .keys = { 0 },
     };
@@ -40,7 +41,7 @@ keyboard_t* keyboard_new( void ) {
 
     // Assigning values of kb keys
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
-        kbd->pins[i] = new_kbdsw(pins[i], &current_idx, keys, keys_size);
+        kbd->pins[i] = new_kbdsw( pins[i], &current_idx, keys, keys_size );
     }
 
     return kbd;
@@ -99,9 +100,7 @@ bool keyboard_update_status( keyboard_t* kbd ) {
     return new_status;
 }
 
-switch_t* kbd_get_sw( keyboard_t* kbd, uint8_t i) {
-    return &kbd->pins[i].sw;
-}
+switch_t* kbd_get_sw( keyboard_t* kbd, uint8_t i ) { return &kbd->pins[i].sw; }
 
 bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
                              uint8_t buff_length ) {
@@ -111,7 +110,7 @@ bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
 
     uint8_t offset = 0;
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
-        if ( sw_get_status(kbd_get_sw(kbd, i)) != SW_PRESSED ) continue;
+        if ( sw_get_status( kbd_get_sw( kbd, i ) ) != SW_PRESSED ) continue;
 
         memcpy( buffer + offset, kbd_get_keys( kbd, i ),
                 kbd_get_key_count( kbd, i ) );
@@ -123,9 +122,9 @@ bool keyboard_update_buffer( keyboard_t* kbd, uint8_t* buffer,
     return status != new_status;
 }
 
-void keyboard_debounce( keyboard_t* kbd ){
+void keyboard_debounce( keyboard_t* kbd ) {
     if ( kbd == NULL ) return;
     for ( uint8_t i = 0; i < PIN_COUNT; i++ ) {
-        sw_debounce(kbd_get_sw(kbd, i));
+        sw_debounce( kbd_get_sw( kbd, i ) );
     }
 }

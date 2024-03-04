@@ -2,8 +2,8 @@
 #define _KBD_H_
 
 #include "../keyboard_config.h"
-#include "pico/stdlib.h"
 #include "../switch/switch.h"
+#include "pico/stdlib.h"
 
 #define PIN_COUNT     9
 
